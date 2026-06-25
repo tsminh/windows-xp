@@ -9,6 +9,15 @@ import Mousetrap from "mousetrap";
 import { useEffect } from "react";
 import { WindowType } from "./constants";
 import { v4 as uuid } from "uuid";
+import GlobalContextMenu from "./components/common/GlobalContextMenu";
+import {
+    selectAllItems,
+    selectChildren,
+    selectEntities,
+} from "./selectors/fileSelectors";
+import DesktopIcon from "./components/complex/DesktopIcons";
+import styled from "styled-components";
+import TaskBar from "./components/common/TaskBar";
 
 const getWindowByType = (type: WindowType, props: IWindow) => {
     switch (type) {
@@ -18,6 +27,13 @@ const getWindowByType = (type: WindowType, props: IWindow) => {
             return <WindowFrame {...props} />;
     }
 };
+
+const Wallpaper = styled.div`
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background-image: url(/wallpaper.webp);
+`;
 
 function App() {
     const dispatch = useAppDispatch();
@@ -31,6 +47,10 @@ function App() {
             return false;
         });
     }, [dispatch]);
+
+    const data = useAppSelector(selectAllItems);
+
+    console.log(data);
 
     return (
         <DragDropProvider
@@ -47,36 +67,20 @@ function App() {
                 dispatch(updatePosition({ id, x, y }));
             }}
         >
-            {windows.map((e) => {
-                const props = {
-                    ...e,
-                    active: activeWindowId === e.id,
-                    onClick: () => dispatch(bringToFront(e.id)),
-                };
-                return getWindowByType(e.internalType, props);
-            })}
-
-            <button
-                style={{ position: "fixed" }}
-                onClick={() => {
-                    dispatch(
-                        openWindow({
-                            id: uuid(),
-                            internalType: -1,
-                            width: 300,
-                            height: 300,
-                            x: 0,
-                            y: 0,
-                            externalIFrame: "https://tsminh.github.io",
-                            title: "Tsminh",
-                        }),
-                    );
-                }}
-            >
-                Tsminh
-            </button>
-
-            <Demo />
+            <GlobalContextMenu>
+                <Wallpaper>
+                    {windows.map((e) => {
+                        const props = {
+                            ...e,
+                            active: activeWindowId === e.id,
+                            onClick: () => dispatch(bringToFront(e.id)),
+                        };
+                        return getWindowByType(e.internalType, props);
+                    })}
+                    <DesktopIcon />
+                    <TaskBar />
+                </Wallpaper>
+            </GlobalContextMenu>
         </DragDropProvider>
     );
 }

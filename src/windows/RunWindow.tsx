@@ -28,7 +28,7 @@ const RunWindow: React.FC<IWindow> = (props) => {
                     <img
                         width={39}
                         height={39}
-                        src={`/__spritemap#sprite-square_ic_run-view`}
+                        src={`/__spritemap#sprite-ic_run-view`}
                     />
                     <div>
                         Input the name of a program, a folder, a document or an

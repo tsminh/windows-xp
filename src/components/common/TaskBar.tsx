@@ -4,6 +4,9 @@ import { useAppSelector } from "../../store/hooks";
 import { selectWindowsByInternalType } from "../../store/selectors";
 
 const Container = styled.footer`
+    position: fixed;
+    bottom: 0;
+    width: 100%;
     display: flex;
     flex-direction: row;
     justify-content: space-between;

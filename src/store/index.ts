@@ -1,4 +1,4 @@
-import { configureStore } from "@reduxjs/toolkit";
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
 
 import {
     persistStore,
@@ -12,20 +12,24 @@ import {
 } from "redux-persist";
 
 import storage from "redux-persist/lib/storage";
-
 import windowReducer from "./windowSlice";
+import fileSystemReducer from "./fileSystemSlice";
+
+const rootReducer = combineReducers({
+    window: windowReducer,
+    fileSystem: fileSystemReducer,
+});
 
 const persistConfig = {
-    key: "window",
+    key: "app",
     storage: (storage as any).default ?? storage,
+    whitelist: ["window"],
 };
 
-const persistedReducer = persistReducer(persistConfig, windowReducer);
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
-    reducer: {
-        window: persistedReducer,
-    },
+    reducer: persistedReducer,
 
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
