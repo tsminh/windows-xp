@@ -10,10 +10,11 @@ const Container = styled.button`
 
 const getDefaultState = (active?: boolean) => (active ? "active" : "inactive");
 
-const SquareButton: React.FC<{ active?: boolean; onClick?: () => void }> = ({
-    active,
-    onClick,
-}) => {
+const SquareButton: React.FC<{
+    danger?: boolean;
+    active?: boolean;
+    onClick?: () => void;
+}> = ({ active, onClick, danger }) => {
     const [state, setState] = useState(() => getDefaultState(active));
 
     useEffect(() => {
@@ -31,7 +32,7 @@ const SquareButton: React.FC<{ active?: boolean; onClick?: () => void }> = ({
             <img
                 width={22}
                 height={22}
-                src={`/__spritemap#sprite-square_${state}-view`}
+                src={`/__spritemap#sprite-square_${danger ? "danger_" : ""}${state}-view`}
             />
         </Container>
     );

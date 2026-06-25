@@ -16,4 +16,6 @@ interface IWindow {
 
     minimized?: boolean;
     maximized?: boolean;
+
+    onClick?: () => void;
 }

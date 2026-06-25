@@ -1,11 +1,7 @@
 import styled from "styled-components";
 import Start from "./Start";
 import { useAppSelector } from "../../store/hooks";
-import {
-    selectWindows,
-    selectWindowsByInternalType,
-} from "../../store/selectors";
-import { useMemo } from "react";
+import { selectWindowsByInternalType } from "../../store/selectors";
 
 const Container = styled.footer`
     display: flex;

@@ -86,6 +86,7 @@ const MainContent = styled.main`
     padding: 0 3px 3px 3px;
     height: 100%;
     width: 100%;
+    font-size: 11px;
 `;
 
 const Container = styled.section<{ $active?: boolean }>`
@@ -109,7 +110,7 @@ const Container = styled.section<{ $active?: boolean }>`
 `;
 
 const WindowFrame: React.FC<
-    IWindow & { children?: ReactNode; onClick: () => void; active?: boolean }
+    IWindow & { children?: ReactNode; active?: boolean }
 > = ({ children, id, title, x, y, width, height, onClick, zIndex, active }) => {
     const { ref, handleRef } = useDraggable({ id });
     const dispatch = useAppDispatch();
@@ -133,6 +134,7 @@ const WindowFrame: React.FC<
                     <SquareButton active={active} />
                     <SquareButton active={active} />
                     <SquareButton
+                        danger
                         active={active}
                         onClick={() => dispatch(closeWindow(id))}
                     />
