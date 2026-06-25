@@ -1,0 +1,47 @@
+import { configureStore } from "@reduxjs/toolkit";
+
+import {
+    persistStore,
+    persistReducer,
+    FLUSH,
+    REHYDRATE,
+    PAUSE,
+    PERSIST,
+    PURGE,
+    REGISTER,
+} from "redux-persist";
+
+import storage from "redux-persist/lib/storage";
+
+import windowReducer from "./windowSlice";
+
+const persistConfig = {
+    key: "window",
+    storage: (storage as any).default ?? storage,
+};
+
+const persistedReducer = persistReducer(persistConfig, windowReducer);
+
+export const store = configureStore({
+    reducer: {
+        window: persistedReducer,
+    },
+
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware({
+            serializableCheck: {
+                ignoredActions: [
+                    FLUSH,
+                    REHYDRATE,
+                    PAUSE,
+                    PERSIST,
+                    PURGE,
+                    REGISTER,
+                ],
+            },
+        }),
+});
+
+export const persistor = persistStore(store);
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
