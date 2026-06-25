@@ -8,6 +8,7 @@ import RunWindow, { windowPayload } from "./windows/RunWindow";
 import Mousetrap from "mousetrap";
 import { useEffect } from "react";
 import { WindowType } from "./constants";
+import { v4 as uuid } from "uuid";
 
 const getWindowByType = (type: WindowType, props: IWindow) => {
     switch (type) {
@@ -54,6 +55,26 @@ function App() {
                 };
                 return getWindowByType(e.internalType, props);
             })}
+
+            <button
+                style={{ position: "fixed" }}
+                onClick={() => {
+                    dispatch(
+                        openWindow({
+                            id: uuid(),
+                            internalType: -1,
+                            width: 300,
+                            height: 300,
+                            x: 0,
+                            y: 0,
+                            externalIFrame: "https://tsminh.github.io",
+                            title: "Tsminh",
+                        }),
+                    );
+                }}
+            >
+                Tsminh
+            </button>
 
             <Demo />
         </DragDropProvider>

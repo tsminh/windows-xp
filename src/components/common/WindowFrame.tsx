@@ -87,6 +87,12 @@ const MainContent = styled.main`
     height: 100%;
     width: 100%;
     font-size: 11px;
+
+    iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
 `;
 
 const Container = styled.section<{ $active?: boolean }>`
@@ -111,7 +117,19 @@ const Container = styled.section<{ $active?: boolean }>`
 
 const WindowFrame: React.FC<
     IWindow & { children?: ReactNode; active?: boolean }
-> = ({ children, id, title, x, y, width, height, onClick, zIndex, active }) => {
+> = ({
+    children,
+    id,
+    title,
+    x,
+    y,
+    width,
+    height,
+    onClick,
+    zIndex,
+    active,
+    externalIFrame,
+}) => {
     const { ref, handleRef } = useDraggable({ id });
     const dispatch = useAppDispatch();
 
@@ -144,7 +162,10 @@ const WindowFrame: React.FC<
                 <BarBottom />
                 <BarRight />
                 <BarLeft />
-                <MainContent>{children}</MainContent>
+                <MainContent>
+                    {externalIFrame && <iframe src={externalIFrame} />}
+                    {children}
+                </MainContent>
             </Content>
         </Container>
     );
