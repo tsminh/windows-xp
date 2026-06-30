@@ -37,8 +37,12 @@ const Item = styled.div`
     display: flex;
     align-items: center;
     width: 100%;
+    cursor: default;
     &:hover {
-        color: #fff;
+        &,
+        > div {
+            color: #fff;
+        }
         background: #316ac5;
         ${SubContainer} {
             display: block;
@@ -101,7 +105,7 @@ const GlobalContextMenu: React.FC<{ children?: ReactNode }> = ({
                                     }),
                                 ),
                         },
-                        { title: "New text" },
+                        { title: "New text", icon: "ic_notepad_small" },
                     ],
                 },
             ] as ItemType[],
@@ -136,16 +140,24 @@ const GlobalContextMenu: React.FC<{ children?: ReactNode }> = ({
                         ) : (
                             <Item onClick={e.onClick}>
                                 {getIconPrefix(e.icon)}
-                                {e.title}
+                                <div style={{ flex: 1 }}>{e.title}</div>
                                 {e.children && e.children.length > 0 && (
-                                    <SubContainer>
-                                        {e.children?.map((ee) => (
-                                            <Item onClick={ee.onClick}>
-                                                {getIconPrefix(ee.icon)}
-                                                {ee.title}
-                                            </Item>
-                                        ))}
-                                    </SubContainer>
+                                    <>
+                                        <SubContainer>
+                                            {e.children?.map((ee) => (
+                                                <Item onClick={ee.onClick}>
+                                                    {getIconPrefix(ee.icon)}
+                                                    {ee.title}
+                                                </Item>
+                                            ))}
+                                        </SubContainer>
+                                        <img
+                                            width={16}
+                                            height={16}
+                                            src={`/__spritemap#sprite-ic_rectangle_right-view`}
+                                            style={{ marginRight: 2 }}
+                                        />
+                                    </>
                                 )}
                             </Item>
                         ),

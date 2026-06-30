@@ -2,6 +2,9 @@ import { useRef, useState } from "react";
 import styled from "styled-components";
 import { useClickOutside } from "../../hooks/useClickOutside";
 import SquareButton from "./SquareButton";
+import { useAppDispatch } from "../../store/hooks";
+import { openWindow } from "../../store/windowSlice";
+import { welcomeWindowMeta } from "../../windows/Welcome";
 
 const Container = styled.button`
     border: 0;
@@ -19,7 +22,7 @@ const StartContainer = styled.div`
     position: fixed;
     bottom: 31px;
     left: 0;
-    z-index: 100;
+    z-index: 10000;
     overflow: hidden;
 
     border: 1px solid #215cc5;
@@ -122,20 +125,13 @@ const StartBottom = styled.div`
     height: 40px;
     padding: 7px 10px;
     gap: 10px;
-
-    > div {
-        display: flex;
-        gap: 5px;
-        color: #fff;
-        align-items: center;
-        padding: 2px;
-    }
 `;
 
 const Start = () => {
     const [state, setState] = useState("idle");
     const [open, setOpen] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
+    const dispatch = useAppDispatch();
 
     useClickOutside(ref, () => {
         setOpen(false);
@@ -144,26 +140,27 @@ const Start = () => {
     return (
         <>
             {open && (
-                <StartContainer ref={ref}>
+                <StartContainer data-ignore-context-menu ref={ref}>
                     <StartTop>Tsminh</StartTop>
                     <div style={{ display: "flex", flex: 1 }}>
                         <Left></Left>
                         <Right>
-                            <div>Run...</div>
+                            <div
+                                onClick={() => {
+                                    dispatch(openWindow(welcomeWindowMeta));
+                                }}
+                            >
+                                Welcome
+                            </div>
+                            <div>Installed applications</div>
                             <div>Run...</div>
                             <div>Run...</div>
                             <hr />
                         </Right>
                     </div>
                     <StartBottom>
-                        <div>
-                            <SquareButton active />
-                            Logout
-                        </div>
-                        <div>
-                            <SquareButton active danger />
-                            Turn off
-                        </div>
+                        <SquareButton label="Logout" active />
+                        <SquareButton label="Turn off" active danger />
                     </StartBottom>
                 </StartContainer>
             )}

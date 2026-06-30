@@ -35,9 +35,7 @@ const collectChildren = (
 
 const fileSystemSlice = createSlice({
     name: "fileSystem",
-
     initialState,
-
     reducers: {
         createFolder: (
             state,

@@ -1,9 +1,14 @@
-import type { ReactNode } from "react";
+import { useCallback, useRef, type MouseEvent, type ReactNode } from "react";
 import styled, { css } from "styled-components";
 import { useDraggable } from "@dnd-kit/react";
 import SquareButton from "./SquareButton";
-import { closeWindow } from "../../store/windowSlice";
+import {
+    closeWindow,
+    minimizeWindow,
+    resetActiveWindow,
+} from "../../store/windowSlice";
 import { useAppDispatch } from "../../store/hooks";
+import { useClickOutside } from "../../hooks/useClickOutside";
 
 const Header = styled.div`
     height: 29px;
@@ -32,6 +37,9 @@ const Title = styled.div`
     padding: 5px 0;
     color: #ffffff;
     flex: 1;
+    font-size: 13px;
+    display: flex;
+    align-items: flex-end;
     text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.5);
 `;
 
@@ -131,7 +139,20 @@ const WindowFrame: React.FC<
     externalIFrame,
 }) => {
     const { ref, handleRef } = useDraggable({ id });
+    const innerRef = useRef<HTMLDivElement>(null);
+
     const dispatch = useAppDispatch();
+    const handleMinimize = useCallback(
+        (e: MouseEvent<HTMLButtonElement>) => {
+            e.stopPropagation();
+            dispatch(minimizeWindow(id));
+        },
+        [dispatch, id],
+    );
+
+    useClickOutside(innerRef, () => {
+        dispatch(resetActiveWindow());
+    });
 
     return (
         <Container
@@ -146,27 +167,42 @@ const WindowFrame: React.FC<
                 zIndex,
             }}
         >
-            <Header>
-                <Title ref={handleRef}>{title}</Title>
-                <HeaderButton>
-                    <SquareButton active={active} />
-                    <SquareButton active={active} />
-                    <SquareButton
-                        danger
-                        active={active}
-                        onClick={() => dispatch(closeWindow(id))}
-                    />
-                </HeaderButton>
-            </Header>
-            <Content style={{ height: `calc(${height}px - 29px)` }}>
-                <BarBottom />
-                <BarRight />
-                <BarLeft />
-                <MainContent>
-                    {externalIFrame && <iframe src={externalIFrame} />}
-                    {children}
-                </MainContent>
-            </Content>
+            <div ref={innerRef}>
+                <Header>
+                    <Title ref={handleRef}>
+                        <img
+                            width={16}
+                            height={16}
+                            src={`/__spritemap#sprite-ic_notepad_small-view`}
+                            style={{ marginRight: 4 }}
+                        />
+                        {title}
+                    </Title>
+                    <HeaderButton>
+                        <SquareButton active={active} />
+                        <SquareButton
+                            onClick={handleMinimize}
+                            ic="control_minimize"
+                            active={active}
+                        />
+                        <SquareButton
+                            ic="control_close"
+                            danger
+                            active={active}
+                            onClick={() => dispatch(closeWindow(id))}
+                        />
+                    </HeaderButton>
+                </Header>
+                <Content style={{ height: `calc(${height}px - 29px)` }}>
+                    <BarBottom />
+                    <BarRight />
+                    <BarLeft />
+                    <MainContent>
+                        {externalIFrame && <iframe src={externalIFrame} />}
+                        {children}
+                    </MainContent>
+                </Content>
+            </div>
         </Container>
     );
 };

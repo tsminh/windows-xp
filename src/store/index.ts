@@ -14,10 +14,12 @@ import {
 import storage from "redux-persist/lib/storage";
 import windowReducer from "./windowSlice";
 import fileSystemReducer from "./fileSystemSlice";
+import applicationReducer from "./applicationSlice";
 
 const rootReducer = combineReducers({
     window: windowReducer,
     fileSystem: fileSystemReducer,
+    application: applicationReducer,
 });
 
 const persistConfig = {

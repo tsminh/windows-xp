@@ -1,7 +1,12 @@
 import styled from "styled-components";
 import Start from "./Start";
-import { useAppSelector } from "../../store/hooks";
-import { selectWindowsByInternalType } from "../../store/selectors";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import {
+    selectActiveWindowId,
+    selectWindowsByInternalType,
+} from "../../store/selectors";
+import { useMemo } from "react";
+import { bringToFront, unminimizeWindow } from "../../store/windowSlice";
 
 const Container = styled.footer`
     position: fixed;
@@ -13,9 +18,8 @@ const Container = styled.footer`
     align-items: flex-start;
     padding: 0px;
     gap: 10px;
-
+    z-index: 1000;
     height: 30px;
-
     background: linear-gradient(
         180deg,
         #3168d5 2.8%,
@@ -97,20 +101,52 @@ const Leading = styled.div`
     flex-grow: 1;
 `;
 
+const Group = styled.div`
+    display: flex;
+`;
+
 const TaskBar = () => {
     const groups = useAppSelector(selectWindowsByInternalType);
+    const activeWindowId = useAppSelector(selectActiveWindowId);
+    const groupActiveId = useMemo(
+        () =>
+            Object.keys(groups).findIndex((k) =>
+                groups[k as any].find((w) => w.id === activeWindowId),
+            ),
+        [activeWindowId, groups],
+    );
+
+    const dispatch = useAppDispatch();
+
+    console.log(activeWindowId, groupActiveId, groups);
 
     return (
         <Container>
             <Leading>
                 <Start />
-                <div>
-                    {Object.keys(groups).map((key) => (
-                        <TaskItem data-active="true">
-                            {groups[parseInt(key)][0].title}
+                <Group>
+                    {Object.keys(groups).map((key, groupIndex) => (
+                        <TaskItem
+                            onClick={() => {
+                                if (groups[parseInt(key)]) {
+                                    dispatch(
+                                        unminimizeWindow(
+                                            groups[parseInt(key)][0].id,
+                                        ),
+                                    );
+                                    dispatch(
+                                        bringToFront(
+                                            groups[parseInt(key)][0].id,
+                                        ),
+                                    );
+                                }
+                            }}
+                            data-active={groupActiveId === groupIndex}
+                        >
+                            {groups[parseInt(key)]?.[0].title}
                         </TaskItem>
                     ))}
-                </div>
+                </Group>
             </Leading>
         </Container>
     );

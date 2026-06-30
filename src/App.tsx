@@ -8,23 +8,23 @@ import RunWindow, { windowPayload } from "./windows/RunWindow";
 import Mousetrap from "mousetrap";
 import { useEffect } from "react";
 import { WindowType } from "./constants";
-import { v4 as uuid } from "uuid";
 import GlobalContextMenu from "./components/common/GlobalContextMenu";
-import {
-    selectAllItems,
-    selectChildren,
-    selectEntities,
-} from "./selectors/fileSelectors";
+import { selectAllItems } from "./selectors/fileSelectors";
 import DesktopIcon from "./components/complex/DesktopIcons";
 import styled from "styled-components";
 import TaskBar from "./components/common/TaskBar";
+import Welcome from "./windows/Welcome";
 
 const getWindowByType = (type: WindowType, props: IWindow) => {
     switch (type) {
         case WindowType.RUN:
             return <RunWindow {...props} />;
         default:
-            return <WindowFrame {...props} />;
+            return (
+                <WindowFrame {...props}>
+                    <Welcome />
+                </WindowFrame>
+            );
     }
 };
 
@@ -75,7 +75,9 @@ function App() {
                             active: activeWindowId === e.id,
                             onClick: () => dispatch(bringToFront(e.id)),
                         };
-                        return getWindowByType(e.internalType, props);
+                        return e.minimized
+                            ? null
+                            : getWindowByType(e.internalType, props);
                     })}
                     <DesktopIcon />
                     <TaskBar />

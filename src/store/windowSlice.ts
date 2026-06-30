@@ -10,16 +10,16 @@ interface WindowState {
 const initialState: WindowState = {
     windows: [],
     activeWindowId: null,
-
     nextZIndex: 1,
 };
 
 const windowSlice = createSlice({
     name: "window",
-
     initialState,
-
     reducers: {
+        resetActiveWindow: (state) => {
+            state.activeWindowId = null;
+        },
         openWindow: (state, action: PayloadAction<Omit<IWindow, "zIndex">>) => {
             const existed = state.windows.find(
                 (w) => w.id === action.payload.id,
@@ -110,10 +110,16 @@ const windowSlice = createSlice({
             if (!window) return;
 
             window.minimized = true;
-
+            console.log(state.activeWindowId, window.id);
             if (state.activeWindowId === window.id) {
                 state.activeWindowId = null;
             }
+        },
+
+        unminimizeWindow: (state, action: PayloadAction<string>) => {
+            const window = state.windows.find((w) => w.id === action.payload);
+            if (!window) return;
+            window.minimized = false;
         },
 
         toggleMaximize: (state, action: PayloadAction<string>) => {
@@ -129,6 +135,7 @@ const windowSlice = createSlice({
 export const {
     openWindow,
     closeWindow,
+    resetActiveWindow,
 
     updatePosition,
     updateSize,
@@ -136,6 +143,7 @@ export const {
     bringToFront,
 
     minimizeWindow,
+    unminimizeWindow,
     toggleMaximize,
 } = windowSlice.actions;
 

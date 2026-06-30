@@ -7,7 +7,7 @@ export const windowPayload: IWindow = {
     internalType: WindowType.RUN,
     width: 363,
     height: 186,
-    id: "",
+    id: "run",
     x: 0,
     y: 0,
     zIndex: 0,
