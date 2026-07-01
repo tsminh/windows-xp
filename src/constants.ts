@@ -1,3 +1,3 @@
-export const enum WindowType {
-    RUN,
+export const enum Application {
+    RUN = "run",
 }

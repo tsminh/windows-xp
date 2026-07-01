@@ -3,10 +3,11 @@ import Start from "./Start";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import {
     selectActiveWindowId,
-    selectWindowsByInternalType,
+    selectWindowsByApplication,
 } from "../../store/selectors";
 import { useMemo } from "react";
 import { bringToFront, unminimizeWindow } from "../../store/windowSlice";
+import SystemTray from "./SystemTray";
 
 const Container = styled.footer`
     position: fixed;
@@ -106,7 +107,7 @@ const Group = styled.div`
 `;
 
 const TaskBar = () => {
-    const groups = useAppSelector(selectWindowsByInternalType);
+    const groups = useAppSelector(selectWindowsByApplication);
     const activeWindowId = useAppSelector(selectActiveWindowId);
     const groupActiveId = useMemo(
         () =>
@@ -118,8 +119,6 @@ const TaskBar = () => {
 
     const dispatch = useAppDispatch();
 
-    console.log(activeWindowId, groupActiveId, groups);
-
     return (
         <Container>
             <Leading>
@@ -128,26 +127,26 @@ const TaskBar = () => {
                     {Object.keys(groups).map((key, groupIndex) => (
                         <TaskItem
                             onClick={() => {
-                                if (groups[parseInt(key)]) {
+                                if (groups[key]) {
                                     dispatch(
-                                        unminimizeWindow(
-                                            groups[parseInt(key)][0].id,
-                                        ),
+                                        unminimizeWindow(groups[key][0].id),
                                     );
-                                    dispatch(
-                                        bringToFront(
-                                            groups[parseInt(key)][0].id,
-                                        ),
-                                    );
+                                    dispatch(bringToFront(groups[key][0].id));
                                 }
                             }}
                             data-active={groupActiveId === groupIndex}
                         >
-                            {groups[parseInt(key)]?.[0].title}
+                            <img
+                                width={16}
+                                height={16}
+                                src={`/__spritemap#sprite-ic_${key}_small-view`}
+                            />
+                            {groups[key]?.[0].title}
                         </TaskItem>
                     ))}
                 </Group>
             </Leading>
+            <SystemTray />
         </Container>
     );
 };

@@ -11,7 +11,7 @@ export function useClickOutside(
             }
         }
 
-        document.addEventListener("mousedown", handleClick);
+        document.addEventListener("mousedown", handleClick, true);
 
         return () => {
             document.removeEventListener("mousedown", handleClick);

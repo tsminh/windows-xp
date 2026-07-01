@@ -106,11 +106,8 @@ const windowSlice = createSlice({
 
         minimizeWindow: (state, action: PayloadAction<string>) => {
             const window = state.windows.find((w) => w.id === action.payload);
-
             if (!window) return;
-
             window.minimized = true;
-            console.log(state.activeWindowId, window.id);
             if (state.activeWindowId === window.id) {
                 state.activeWindowId = null;
             }

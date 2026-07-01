@@ -15,11 +15,14 @@ import storage from "redux-persist/lib/storage";
 import windowReducer from "./windowSlice";
 import fileSystemReducer from "./fileSystemSlice";
 import applicationReducer from "./applicationSlice";
+import startReducer from "./startSlice";
+import listenerMiddleware from "./middleware";
 
 const rootReducer = combineReducers({
     window: windowReducer,
     fileSystem: fileSystemReducer,
     application: applicationReducer,
+    start: startReducer,
 });
 
 const persistConfig = {
@@ -32,7 +35,6 @@ const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
     reducer: persistedReducer,
-
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
             serializableCheck: {
@@ -45,8 +47,10 @@ export const store = configureStore({
                     REGISTER,
                 ],
             },
-        }),
+        }).prepend(listenerMiddleware.middleware),
 });
+
+(window as any).appDispatch = store.dispatch;
 
 export const persistor = persistStore(store);
 export type RootState = ReturnType<typeof store.getState>;

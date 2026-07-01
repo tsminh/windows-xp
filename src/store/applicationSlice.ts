@@ -35,9 +35,7 @@ const initialState: ApplicationState = {
 
 const applicationSlice = createSlice({
     name: "application",
-
     initialState,
-
     reducers: {
         installApplication(state, action: PayloadAction<IApplication>) {
             const app = action.payload;

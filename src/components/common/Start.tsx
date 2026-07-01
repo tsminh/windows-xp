@@ -1,10 +1,12 @@
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import styled from "styled-components";
 import { useClickOutside } from "../../hooks/useClickOutside";
 import SquareButton from "./SquareButton";
-import { useAppDispatch } from "../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { openWindow } from "../../store/windowSlice";
 import { welcomeWindowMeta } from "../../windows/Welcome";
+import { selectIsStartOpen } from "@/selectors/startSelectors";
+import { toggleStart } from "@/store/startSlice";
 
 const Container = styled.button`
     border: 0;
@@ -63,12 +65,16 @@ const Right = styled.div`
 
     > div {
         height: 26px;
+        width: 100%;
+        display: flex;
+        align-items: center;
         cursor: pointer;
         color: #0a236a;
         padding: 1px;
         gap: 4px;
+
         &:hover {
-            text-decoration: underline;
+            background: #316ac5;
         }
     }
 
@@ -125,17 +131,26 @@ const StartBottom = styled.div`
     height: 40px;
     padding: 7px 10px;
     gap: 10px;
+
+    > div {
+        &:hover {
+            background: #316ac5;
+        }
+    }
 `;
 
 const Start = () => {
     const [state, setState] = useState("idle");
-    const [open, setOpen] = useState(false);
-    const ref = useRef<HTMLDivElement>(null);
+    const open = useAppSelector(selectIsStartOpen);
     const dispatch = useAppDispatch();
 
-    useClickOutside(ref, () => {
-        setOpen(false);
-    });
+    const ref = useRef<HTMLDivElement>(null);
+
+    const handleToggleStart = useCallback(() => {
+        dispatch(toggleStart());
+    }, [dispatch]);
+
+    useClickOutside(ref, handleToggleStart);
 
     return (
         <>
@@ -154,25 +169,28 @@ const Start = () => {
                             </div>
                             <div>Installed applications</div>
                             <div>Run...</div>
-                            <div>Run...</div>
                             <hr />
                         </Right>
                     </div>
                     <StartBottom>
-                        <SquareButton label="Logout" active />
-                        <SquareButton label="Turn off" active danger />
+                        <div>
+                            <SquareButton label="Logout" active />
+                        </div>
+                        <div>
+                            <SquareButton label="Turn off" active danger />
+                        </div>
                     </StartBottom>
                 </StartContainer>
             )}
             <Container
-                onClick={() => setOpen(true)}
+                onClick={handleToggleStart}
                 onMouseOver={() => setState("hover")}
                 onMouseDown={() => setState("pressed")}
                 onMouseUp={() => setState("idle")}
             >
                 <img
                     height={30}
-                    src={`/__spritemap#sprite-start_${state}-view`}
+                    src={`/__spritemap#sprite-start_${open ? "pressed" : state}-view`}
                 />
             </Container>
         </>

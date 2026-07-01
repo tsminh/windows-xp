@@ -115,7 +115,6 @@ const GlobalContextMenu: React.FC<{ children?: ReactNode }> = ({
     return (
         <div
             onContextMenu={(e) => {
-                console.log(e);
                 setShow({
                     visible: true,
                     x: e.clientX + 4,

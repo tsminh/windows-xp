@@ -1,4 +1,3 @@
-import Demo from "./components/common/Demo";
 import { DragDropProvider } from "@dnd-kit/react";
 import { bringToFront, openWindow, updatePosition } from "./store/windowSlice";
 import { useAppDispatch, useAppSelector } from "./store/hooks";
@@ -7,7 +6,7 @@ import WindowFrame from "./components/common/WindowFrame";
 import RunWindow, { windowPayload } from "./windows/RunWindow";
 import Mousetrap from "mousetrap";
 import { useEffect } from "react";
-import { WindowType } from "./constants";
+import { Application } from "./constants";
 import GlobalContextMenu from "./components/common/GlobalContextMenu";
 import { selectAllItems } from "./selectors/fileSelectors";
 import DesktopIcon from "./components/complex/DesktopIcons";
@@ -15,24 +14,23 @@ import styled from "styled-components";
 import TaskBar from "./components/common/TaskBar";
 import Welcome from "./windows/Welcome";
 
-const getWindowByType = (type: WindowType, props: IWindow) => {
+const getApplicationWindow = (type: string, props: IWindow) => {
     switch (type) {
-        case WindowType.RUN:
+        case Application.RUN:
             return <RunWindow {...props} />;
         default:
-            return (
-                <WindowFrame {...props}>
-                    <Welcome />
-                </WindowFrame>
-            );
+            return <Welcome />;
     }
 };
+
+const applicationLists = [];
 
 const Wallpaper = styled.div`
     width: 100vw;
     height: 100vh;
     overflow: hidden;
     background-image: url(/wallpaper.webp);
+    position: fixed;
 `;
 
 function App() {
@@ -49,8 +47,6 @@ function App() {
     }, [dispatch]);
 
     const data = useAppSelector(selectAllItems);
-
-    console.log(data);
 
     return (
         <DragDropProvider
@@ -73,11 +69,12 @@ function App() {
                         const props = {
                             ...e,
                             active: activeWindowId === e.id,
-                            onClick: () => dispatch(bringToFront(e.id)),
                         };
-                        return e.minimized
-                            ? null
-                            : getWindowByType(e.internalType, props);
+                        return e.minimized ? null : (
+                            <WindowFrame {...props}>
+                                {getApplicationWindow(e.applicationId, props)}
+                            </WindowFrame>
+                        );
                     })}
                     <DesktopIcon />
                     <TaskBar />

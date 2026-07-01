@@ -5,16 +5,26 @@ export const welcomeWindowMeta: IWindow = {
     height: 200,
     x: 500,
     y: 500,
-    internalType: -1,
+    applicationId: "",
     zIndex: 1,
 };
 
 const Welcome = () => {
     return (
-        <div>
-            Hello this is Windows XP implemented with ReactJS.
-            <br />
-            By <i>tsminh</i>
+        <div
+            style={{
+                height: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                transform: "translateY(-5%)",
+            }}
+        >
+            <div>
+                Hello this is Windows XP implemented with ReactJS.
+                <br />
+                By <i>tsminh</i>
+            </div>
         </div>
     );
 };

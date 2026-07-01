@@ -11,9 +11,6 @@ const Container = styled.button`
     > label {
         padding: 6.5px 2px 6.5px 5px;
         color: #fff;
-        &:hover {
-            text-decoration: underline;
-        }
     }
 `;
 

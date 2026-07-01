@@ -1,14 +1,16 @@
 import { useCallback, useRef, type MouseEvent, type ReactNode } from "react";
 import styled, { css } from "styled-components";
 import { useDraggable } from "@dnd-kit/react";
-import SquareButton from "./SquareButton";
+import SquareButton from "@/components/common/SquareButton";
 import {
+    bringToFront,
     closeWindow,
     minimizeWindow,
     resetActiveWindow,
-} from "../../store/windowSlice";
-import { useAppDispatch } from "../../store/hooks";
-import { useClickOutside } from "../../hooks/useClickOutside";
+    toggleMaximize,
+} from "@/store/windowSlice";
+import { useAppDispatch } from "@/store/hooks";
+import { useClickOutside } from "@/hooks/useClickOutside";
 
 const Header = styled.div`
     height: 29px;
@@ -86,15 +88,17 @@ const BarLeft = styled.div`
 `;
 
 const Content = styled.div`
-    background: #ece9d8;
     position: relative;
 `;
 
 const MainContent = styled.main`
-    padding: 0 3px 3px 3px;
-    height: 100%;
-    width: 100%;
+    margin: 0 3px 3px 3px;
+    height: calc(100% - 3px);
+    width: calc(100% - 6px);
     font-size: 11px;
+    position: relative;
+    z-index: 100;
+    background: #ece9d8;
 
     iframe {
         width: 100%;
@@ -117,8 +121,9 @@ const Container = styled.section<{ $active?: boolean }>`
                 content: "";
                 width: 100%;
                 height: 100%;
+                z-index: 1;
                 border-radius: 8px 8px 0px 0px;
-                background: rgba(242, 217, 217, 0.5);
+                background: rgba(246, 237, 237, 0.5);
             }
         `}
 `;
@@ -133,15 +138,17 @@ const WindowFrame: React.FC<
     y,
     width,
     height,
-    onClick,
     zIndex,
     active,
     externalIFrame,
+    maximized,
+    applicationId,
 }) => {
     const { ref, handleRef } = useDraggable({ id });
     const innerRef = useRef<HTMLDivElement>(null);
 
     const dispatch = useAppDispatch();
+
     const handleMinimize = useCallback(
         (e: MouseEvent<HTMLButtonElement>) => {
             e.stopPropagation();
@@ -149,6 +156,25 @@ const WindowFrame: React.FC<
         },
         [dispatch, id],
     );
+    const handleClose = useCallback(
+        (e: MouseEvent<HTMLButtonElement>) => {
+            e.stopPropagation();
+            dispatch(closeWindow(id));
+        },
+        [dispatch, id],
+    );
+
+    const handleToggleMaximize = useCallback(
+        (e: MouseEvent<HTMLButtonElement>) => {
+            e.stopPropagation();
+            dispatch(toggleMaximize(id));
+        },
+        [dispatch, id],
+    );
+
+    const onClick = useCallback(() => {
+        dispatch(bringToFront(id));
+    }, [dispatch, id]);
 
     useClickOutside(innerRef, () => {
         dispatch(resetActiveWindow());
@@ -173,23 +199,31 @@ const WindowFrame: React.FC<
                         <img
                             width={16}
                             height={16}
-                            src={`/__spritemap#sprite-ic_notepad_small-view`}
+                            src={`/__spritemap#sprite-ic_${applicationId}_small-view`}
                             style={{ marginRight: 4 }}
                         />
                         {title}
                     </Title>
                     <HeaderButton>
-                        <SquareButton active={active} />
                         <SquareButton
                             onClick={handleMinimize}
                             ic="control_minimize"
                             active={active}
                         />
                         <SquareButton
+                            onClick={handleToggleMaximize}
+                            ic={
+                                maximized
+                                    ? "control_unmaximize"
+                                    : "control_maximize"
+                            }
+                            active={active}
+                        />
+                        <SquareButton
                             ic="control_close"
                             danger
                             active={active}
-                            onClick={() => dispatch(closeWindow(id))}
+                            onClick={handleClose}
                         />
                     </HeaderButton>
                 </Header>

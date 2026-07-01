@@ -3,19 +3,17 @@ interface IWindow {
     icon?: string;
     title?: string;
 
-    internalType: number;
+    applicationId: string;
     externalIFrame?: string;
 
     width: number;
     height: number;
 
-    x: number;
-    y: number;
+    x?: number;
+    y?: number;
 
-    zIndex: number;
+    zIndex?: number;
 
     minimized?: boolean;
     maximized?: boolean;
-
-    onClick?: () => void;
 }
