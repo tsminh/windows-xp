@@ -13,9 +13,12 @@ import DesktopIcon from "./components/complex/DesktopIcons";
 import styled from "styled-components";
 import TaskBar from "./components/common/TaskBar";
 import Welcome from "./windows/Welcome";
+import Explorer from "./windows/Explorer";
 
 const getApplicationWindow = (type: string, props: IWindow) => {
     switch (type) {
+        case Application.EXPLORER:
+            return <Explorer />;
         case Application.RUN:
             return <RunWindow {...props} />;
         default:

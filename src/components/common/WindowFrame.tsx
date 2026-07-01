@@ -8,9 +8,11 @@ import {
     minimizeWindow,
     resetActiveWindow,
     toggleMaximize,
+    updateSize,
 } from "@/store/windowSlice";
 import { useAppDispatch } from "@/store/hooks";
 import { useClickOutside } from "@/hooks/useClickOutside";
+import { useResize } from "@/hooks/useResize";
 
 const Header = styled.div`
     height: 29px;
@@ -52,6 +54,7 @@ const HeaderButton = styled.div`
 `;
 
 const BarRight = styled.div`
+    cursor: ew-resize;
     position: absolute;
     width: 3px;
     height: calc(100% - 3px);
@@ -63,6 +66,7 @@ const BarRight = styled.div`
 `;
 
 const BarBottom = styled.div`
+    cursor: ns-resize;
     height: 3px;
     position: absolute;
     bottom: 0;
@@ -73,6 +77,15 @@ const BarBottom = styled.div`
         inset 4px 0px 4px -2px #0017c1,
         inset -3px 0px 2px -2px #002dbe,
         inset 5px 3.5px 1px -2px #0048f1;
+`;
+
+const Corner = styled.div`
+    width: 3px;
+    height: 3px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    cursor: nwse-resize;
 `;
 
 const BarLeft = styled.div`
@@ -136,8 +149,8 @@ const WindowFrame: React.FC<
     title,
     x,
     y,
-    width,
-    height,
+    width: originalWidth,
+    height: originalHeight,
     zIndex,
     active,
     externalIFrame,
@@ -180,16 +193,35 @@ const WindowFrame: React.FC<
         dispatch(resetActiveWindow());
     });
 
+    const width = maximized ? "100vw" : originalWidth;
+    const height = maximized ? "100vh" : `${originalHeight}px`;
+
+    const startResize = useResize({
+        width: originalWidth,
+        height: originalHeight,
+
+        onResize: (width, height) => {
+            dispatch(
+                updateSize({
+                    id,
+                    width,
+                    height,
+                }),
+            );
+        },
+    });
+
     return (
         <Container
+            data-window-id={id}
             $active={active}
             onClick={onClick}
             ref={ref}
             style={{
                 width,
                 height,
-                left: x,
-                top: y,
+                left: maximized ? 0 : x,
+                top: maximized ? 0 : y,
                 zIndex,
             }}
         >
@@ -227,9 +259,10 @@ const WindowFrame: React.FC<
                         />
                     </HeaderButton>
                 </Header>
-                <Content style={{ height: `calc(${height}px - 29px)` }}>
-                    <BarBottom />
-                    <BarRight />
+                <Content style={{ height: `calc(${height} - 29px)` }}>
+                    <BarBottom onPointerDown={startResize("corner")} />
+                    <BarRight onPointerDown={startResize("right")} />
+                    <Corner onPointerDown={startResize("corner")} />
                     <BarLeft />
                     <MainContent>
                         {externalIFrame && <iframe src={externalIFrame} />}

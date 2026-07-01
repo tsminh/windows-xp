@@ -1,8 +1,10 @@
 import styled, { css } from "styled-components";
 import { selectChildren } from "../../selectors/fileSelectors";
 import { FileType } from "../../store/fileSystemSlice";
-import { useAppSelector } from "../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { useState } from "react";
+import { openWindow } from "@/store/windowSlice";
+import { explorerWindowMeta } from "@/windows/Explorer";
 
 const Container = styled.div`
     padding: 8px;
@@ -34,6 +36,7 @@ const Item = styled.div<{ $active?: boolean }>`
 const DesktopIcon = () => {
     const data = useAppSelector(selectChildren("Desktop"));
     const [selected, setSelected] = useState<string | undefined>();
+    const dispatch = useAppDispatch();
 
     return (
         <Container>
@@ -42,6 +45,9 @@ const DesktopIcon = () => {
                     <Item
                         $active={selected === e.id}
                         onClick={() => setSelected(e.id)}
+                        onDoubleClick={() => {
+                            dispatch(openWindow(explorerWindowMeta));
+                        }}
                     >
                         <img
                             width={48}
